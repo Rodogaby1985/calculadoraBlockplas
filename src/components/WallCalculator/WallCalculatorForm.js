@@ -3,21 +3,23 @@ import React from 'react';
 const WallCalculatorForm = ({ walls, setWalls }) => {
   const handleWallChange = (index, e) => {
     const newWalls = [...walls];
-    newWalls[index][e.target.name] = Number(e.target.value);
+    // Convertir a número o null si está vacío para permitir borrar el 0
+    newWalls[index][e.target.name] = e.target.value === '' ? null : Number(e.target.value);
     setWalls(newWalls);
   };
 
   const handleOpeningChange = (wallIndex, openingIndex, e) => {
     const newWalls = [...walls];
-    newWalls[wallIndex].openings[openingIndex][e.target.name] = Number(e.target.value);
+    // Convertir a número o null si está vacío para permitir borrar el 0
+    newWalls[wallIndex].openings[openingIndex][e.target.name] = e.target.value === '' ? null : Number(e.target.value);
     setWalls(newWalls);
   };
 
   const addWall = () => {
     if (walls.length < 4) {
       setWalls([...walls, { 
-        height: 0, 
-        width: 0, 
+        height: null, // Cambiado a null para permitir borrar el 0
+        width: null,  // Cambiado a null para permitir borrar el 0
         openings: [] 
       }]);
     }
@@ -34,8 +36,8 @@ const WallCalculatorForm = ({ walls, setWalls }) => {
     const newWalls = [...walls];
     newWalls[wallIndex].openings.push({
       type: 'door',
-      height: 2.1,
-      width: 0.9
+      height: null, // Cambiado a null
+      width: null   // Cambiado a null
     });
     setWalls(newWalls);
   };
@@ -57,7 +59,7 @@ const WallCalculatorForm = ({ walls, setWalls }) => {
               <input
                 type="number"
                 name="height"
-                value={wall.height}
+                value={wall.height === null ? '' : wall.height} // Mostrar vacío si es null
                 onChange={(e) => handleWallChange(wallIndex, e)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 placeholder="Ej: 2.5"
@@ -70,7 +72,7 @@ const WallCalculatorForm = ({ walls, setWalls }) => {
               <input
                 type="number"
                 name="width"
-                value={wall.width}
+                value={wall.width === null ? '' : wall.width} // Mostrar vacío si es null
                 onChange={(e) => handleWallChange(wallIndex, e)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 placeholder="Ej: 3.2"
@@ -111,7 +113,7 @@ const WallCalculatorForm = ({ walls, setWalls }) => {
                     <input
                       type="number"
                       name="height"
-                      value={opening.height}
+                      value={opening.height === null ? '' : opening.height} // Mostrar vacío si es null
                       onChange={(e) => handleOpeningChange(wallIndex, openingIndex, e)}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                       placeholder="Ej: 2.1"
@@ -126,7 +128,7 @@ const WallCalculatorForm = ({ walls, setWalls }) => {
                     <input
                       type="number"
                       name="width"
-                      value={opening.width}
+                      value={opening.width === null ? '' : opening.width} // Mostrar vacío si es null
                       onChange={(e) => handleOpeningChange(wallIndex, openingIndex, e)}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                       placeholder="Ej: 0.9"

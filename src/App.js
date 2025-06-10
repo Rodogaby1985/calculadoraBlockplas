@@ -2,40 +2,41 @@ import React, { useState } from 'react';
 import { WallCalculatorHeader, WallCalculatorForm, WallCalculatorResults, WallSelector } from './components/WallCalculator';
 
 const App = () => {
+  // Inicializar con null para que los campos estén vacíos al inicio
   const [walls, setWalls] = useState([{ 
-    height: 0, 
-    width: 0, 
+    height: null, 
+    width: null, 
     openings: [] 
   }]);
 
   const handleLayoutSelect = (layoutType) => {
     switch(layoutType) {
       case 'single':
-        setWalls([{ height: 0, width: 0, openings: [] }]);
+        setWalls([{ height: null, width: null, openings: [] }]);
         break;
       case 'L':
         setWalls([
-          { height: 0, width: 0, openings: [] },
-          { height: 0, width: 0, openings: [] }
+          { height: null, width: null, openings: [] },
+          { height: null, width: null, openings: [] }
         ]);
         break;
       case 'U':
         setWalls([
-          { height: 0, width: 0, openings: [] },
-          { height: 0, width: 0, openings: [] },
-          { height: 0, width: 0, openings: [] }
+          { height: null, width: null, openings: [] },
+          { height: null, width: null, openings: [] },
+          { height: null, width: null, openings: [] }
         ]);
         break;
       case 'square':
         setWalls([
-          { height: 0, width: 0, openings: [] },
-          { height: 0, width: 0, openings: [] },
-          { height: 0, width: 0, openings: [] },
-          { height: 0, width: 0, openings: [] }
+          { height: null, width: null, openings: [] },
+          { height: null, width: null, openings: [] },
+          { height: null, width: null, openings: [] },
+          { height: null, width: null, openings: [] }
         ]);
         break;
       default:
-        setWalls([{ height: 0, width: 0, openings: [] }]);
+        setWalls([{ height: null, width: null, openings: [] }]);
     }
   };
 
@@ -58,5 +59,3 @@ const App = () => {
 };
 
 export default App;
-
-// DONE
