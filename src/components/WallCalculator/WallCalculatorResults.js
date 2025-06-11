@@ -14,17 +14,26 @@ const WallCalculatorResults = ({ walls }) => {
     width: 0.08    // 8 cm
   };
 
+  // Packs de venta
+  const PACK_DOUBLE_BRICKS = 60; // 60 ladrillos dobles = 1 m2
+  const PACK_SINGLE_BRICKS = 30; // 30 ladrillos simples
+
   // Calcula el área neta de una pared (restando aberturas)
   const calculateWallArea = (wall) => {
-    const wallArea = wall.height * wall.width;
+    const wallHeight = wall.height || 0;
+    const wallWidth = wall.width || 0;
+    const wallArea = wallHeight * wallWidth;
+    
     const openingsArea = wall.openings?.reduce((total, opening) => {
-      return total + (opening.height * opening.width);
+      const openingHeight = opening.height || 0;
+      const openingWidth = opening.width || 0;
+      return total + (openingHeight * openingWidth);
     }, 0) || 0;
     
     return wallArea - openingsArea;
   };
 
-  // Función agregada para calcular el área total
+  // Función para calcular el área total
   const calculateTotalArea = () => {
     return walls.reduce((total, wall) => {
       return total + calculateWallArea(wall);
@@ -41,12 +50,12 @@ const WallCalculatorResults = ({ walls }) => {
 
   // Calcula ladrillos simples necesarios (altura/0.08)
   const calculateSingleBricksForWall = (wall) => {
-    // Ladrillos para altura de pared
-    const heightBricks = wall.height / BRICK_SINGLE.width;
+    const wallHeight = wall.height || 0;
+    const heightBricks = wallHeight / BRICK_SINGLE.width;
     
-    // Ladrillos para aberturas (altura abertura/0.08)
     const openingBricks = wall.openings?.reduce((total, opening) => {
-      return total + (opening.height / BRICK_SINGLE.width);
+      const openingHeight = opening.height || 0;
+      return total + (openingHeight / BRICK_SINGLE.width);
     }, 0) || 0;
     
     const totalSingleBricks = heightBricks + openingBricks;
@@ -65,31 +74,23 @@ const WallCalculatorResults = ({ walls }) => {
   const totalArea = calculateTotalArea();
   const bricksNeeded = calculateTotalBricks();
 
-  // Función para mostrar detalles de cálculo
-  const renderCalculationDetails = () => {
-    return walls.map((wall, index) => {
-      const heightBricks = wall.height / BRICK_SINGLE.width;
-      const openingBricks = wall.openings?.reduce((total, opening) => {
-        return total + (opening.height / BRICK_SINGLE.width);
-      }, 0) || 0;
-      
-      return (
-        <div key={index} className="mt-3 p-3 bg-gray-50 rounded-lg">
-          <p className="font-medium">Pared {index + 1}:</p>
-          <p className="text-sm">• Ladrillos simples altura: {heightBricks.toFixed(1)} ({wall.height}m / 0.08m)</p>
-          {wall.openings?.length > 0 && (
-            <p className="text-sm">• Ladrillos simples aberturas: {openingBricks.toFixed(1)}</p>
-          )}
-          <p className="text-sm font-medium mt-1">
-            Total pared {index + 1}: {Math.ceil((heightBricks + openingBricks) * 1.1)} (incluye 10%)
-          </p>
-        </div>
-      );
-    });
+  // Calcular packs de ladrillos dobles
+  const m2DoubleBricks = bricksNeeded.double / PACK_DOUBLE_BRICKS;
+  const packsDoubleBricks = Math.ceil(m2DoubleBricks);
+
+  // Calcular packs de ladrillos simples
+  const packsSingleBricks = Math.ceil(bricksNeeded.single / PACK_SINGLE_BRICKS);
+
+  const handleGoToShop = () => {
+    window.open('https://blockplas.com.ar/tienda/', '_blank', 'noopener,noreferrer');
   };
 
-  const handleArmarPedidoClick = () => {
-    window.open('https://blockplas.com.ar/tienda/', '_blank');
+  const handleBuyDoubleBricks = () => {
+    window.open('https://blockplas.com.ar/producto/ladrillos-plasticos-reciclados-blockplas-x-mts2/', '_blank', 'noopener,noreferrer');
+  };
+
+  const handleBuySingleBricks = () => {
+    window.open('https://blockplas.com.ar/producto/ladrillos-simples-plasticos-reciclados-blockplas-x-mts2/', '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -108,40 +109,43 @@ const WallCalculatorResults = ({ walls }) => {
         </div>
 
         <div className="bg-white p-4 rounded-lg">
-          <h4 className="font-medium mb-3">Ladrillos necesarios</h4>
-          <div className="grid grid-cols-2 gap-4">
+          {/* Texto "Vas a necesitar:" más grande y en negrita */}
+          <h4 className="text-xl font-bold mb-3">Vas a necesitar:</h4>
+          <div className="space-y-3">
             <div className="p-3 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-600">Dobles (10x20x8 cm)</p>
-              <p className="text-xl font-bold">{bricksNeeded.double}</p>
-              <p className="text-xs text-gray-500">Estructura principal</p>
+              <p className="text-sm text-blue-600 font-semibold">Ladrillos Dobles:</p>
+              <p className="text-xl font-bold">{packsDoubleBricks} m² ({packsDoubleBricks * PACK_DOUBLE_BRICKS} ladrillos dobles)</p>
+              <p className="text-xs text-gray-500">Se venden en packs de {PACK_DOUBLE_BRICKS} ladrillos dobles (1 m²)</p>
+              <button
+                type="button"
+                onClick={handleBuyDoubleBricks}
+                className="w-full mt-3 bg-blue-700 text-white py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition-colors shadow-sm"
+              >
+                Comprar Ladrillos Dobles
+              </button>
             </div>
             <div className="p-3 bg-green-50 rounded-lg">
-              <p className="text-sm text-green-600">Simples (10x10x8 cm)</p>
-              <p className="text-xl font-bold">{bricksNeeded.single}</p>
-              <p className="text-xs text-gray-500">Terminaciones</p>
+              <p className="text-sm text-green-600 font-semibold">Ladrillos Simples:</p>
+              <p className="text-xl font-bold">{packsSingleBricks * PACK_SINGLE_BRICKS} ladrillos simples ({packsSingleBricks} pack{packsSingleBricks !== 1 ? 's' : ''})</p>
+              <p className="text-xs text-gray-500">Se venden en packs de {PACK_SINGLE_BRICKS} ladrillos simples</p>
+              <button
+                type="button"
+                onClick={handleBuySingleBricks}
+                className="w-full mt-3 bg-green-700 text-white py-2 rounded-lg text-sm font-semibold hover:bg-green-800 transition-colors shadow-sm"
+              >
+                Comprar Ladrillos Simples
+              </button>
             </div>
           </div>
-          <div className="mt-3 p-2 bg-yellow-50 rounded-lg">
-            <p className="text-sm text-yellow-700">
-              <span className="font-medium">Total:</span> {bricksNeeded.double + bricksNeeded.single} ladrillos (incluye 10% desperdicio)
-            </p>
-          </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg">
-          <h4 className="font-medium mb-2">Detalles de cálculo</h4>
-          <p className="text-sm text-gray-600 mb-3">
-            Ladrillos simples = (Altura pared / 0.08m) + (Altura abertura / 0.08m por cada abertura)
-          </p>
-          {renderCalculationDetails()}
-        </div>
-
-        {/* Botón "Armar Pedido" */}
+        {/* Botón "Ir a la Tienda" */}
         <button
-          onClick={handleArmarPedidoClick}
+          type="button"
+          onClick={handleGoToShop}
           className="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors shadow-md"
         >
-          Armar Pedido
+          Ir a la Tienda
         </button>
       </div>
     </div>
